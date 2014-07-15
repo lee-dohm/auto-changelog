@@ -1,5 +1,6 @@
 fs = require 'fs-plus'
 path = require 'path'
+Q = require 'q'
 
 # Handles the activation and deactivation of the package.
 module.exports =
@@ -11,5 +12,8 @@ module.exports =
   # Public: Updates the CHANGELOG.
   execute: ->
     changelogPath = path.join(atom.project.getPath(), 'CHANGELOG.md')
+
     if fs.existsSync(changelogPath)
       atom.workspace.open(changelogPath)
+    else
+      Q()
