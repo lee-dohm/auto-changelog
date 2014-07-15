@@ -17,11 +17,10 @@ describe 'AutoChangelog', ->
       atom.workspace = atom.workspaceView.model
 
     it 'does nothing if the current project does not contain a CHANGELOG.md', ->
-      waitsForPromise ->
-        AutoChangelog.execute()
+      AutoChangelog.execute()
 
-      runs ->
-        expect(fs.readdirSync(directory).length).toBe 0
+      expect(fs.readdirSync(directory).length).toBe 0
+      expect(atom.workspace.getEditors().length).toBe 0
 
     describe 'when there is a CHANGELOG.md', ->
       [filePath] = []
