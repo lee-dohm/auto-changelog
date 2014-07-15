@@ -1,0 +1,11 @@
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'Auto Changelog'
+      'submenu': [
+        { 'label': 'Execute', 'command': 'auto-changelog:execute' }
+      ]
+    ]
+  }
+]

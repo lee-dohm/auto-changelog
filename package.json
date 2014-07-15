@@ -1,0 +1,14 @@
+{
+  "name": "auto-changelog",
+  "main": "./lib/auto-changelog",
+  "version": "0.0.0",
+  "description": "Automatically updates the CHANGELOG of your Atom package based on the `git log` since your last release tag",
+  "activationEvents": ["auto-changelog:execute"],
+  "repository": "https://github.com/lee-dohm/auto-changelog",
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "dependencies": {
+  }
+}
