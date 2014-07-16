@@ -11,6 +11,11 @@ module.exports =
 
   # Public: Updates the CHANGELOG.
   execute: ->
+    @openChangelog().then (editor) ->
+      return unless editor?
+      editor.setText("# CHANGELOG\n\n## **master**\n\n")
+
+  openChangelog: ->
     changelogPath = path.join(atom.project.getPath(), 'CHANGELOG.md')
 
     if fs.existsSync(changelogPath)

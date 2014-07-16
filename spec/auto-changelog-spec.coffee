@@ -25,7 +25,7 @@ describe 'AutoChangelog', ->
         expect(atom.workspace.getEditors().length).toBe 0
 
     describe 'when there is a CHANGELOG.md', ->
-      [filePath] = []
+      [editor, filePath] = []
 
       beforeEach ->
         filePath = path.join(directory, 'CHANGELOG.md')
@@ -37,4 +37,24 @@ describe 'AutoChangelog', ->
 
         runs ->
           filenames = atom.workspace.getEditors().map (e) -> path.basename(e.getPath())
+          expect(filenames.length).toBe 1
           expect(filenames).toContain 'CHANGELOG.md'
+
+      describe 'when the CHANGELOG.md is already open', ->
+        [buffer] = []
+
+        beforeEach ->
+          waitsForPromise ->
+            atom.workspace.open(filePath).then (e) ->
+              editor = e
+              buffer = editor.getBuffer()
+
+          waitsForPromise ->
+            AutoChangelog.execute()
+
+        it 'adds the top-level header, if it is not there', ->
+          expect(buffer.lineForRow(0)).toBe '# CHANGELOG'
+
+        it 'adds the master tag header, if it is not there', ->
+          expect(buffer.lineForRow(1)).toBe ''
+          expect(buffer.lineForRow(2)).toBe '## **master**'
