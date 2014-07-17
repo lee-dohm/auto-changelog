@@ -1,3 +1,4 @@
+{BufferedProcess} = require 'atom'
 fs = require 'fs-plus'
 path = require 'path'
 Q = require 'q'
@@ -11,10 +12,17 @@ module.exports =
 
   # Public: Updates the CHANGELOG.
   execute: ->
-    @openChangelog().then (editor) ->
+    @openChangelog().then (editor) =>
       return unless editor?
       editor.setText("# CHANGELOG\n\n## **master**\n\n")
+      editor.moveCursorToBottom()
 
+      stdout = (line) -> editor.insertText("* #{line}")
+      @run('/usr/local/bin/git log --decorate --pretty="format:%s" --no-color --no-merges', stdout)
+
+  # Internal: Opens the changelog file.
+  #
+  # Returns a {Promise} that resolves to the editor for the file.
   openChangelog: ->
     changelogPath = path.join(atom.project.getPath(), 'CHANGELOG.md')
 
@@ -22,3 +30,16 @@ module.exports =
       atom.workspace.open(changelogPath)
     else
       Q()
+
+  run: (commandText, out) ->
+    deferred = Q.defer()
+
+    parts = commandText.split(' ')
+    command = parts[0]
+    args = parts.slice(1)
+    exit = -> deferred.resolve()
+    options =
+      cwd: atom.project.getPath()
+    new BufferedProcess({command, args, options, stdout: out, exit})
+
+    deferred.promise

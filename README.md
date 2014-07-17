@@ -9,9 +9,9 @@ Automatically updates the CHANGELOG of your Atom package based on the `git log` 
 1. Creates or appends to the `CHANGELOG.md`, if it exists
 1. Inserts or creates header `# CHANGELOG`
 1. Inserts or creates header `## **master**`
-1. Inserts an entry in the CHANGELOG for each log entry that does not match:
-    * `^Merge`
-    * `^:memo:`
+1. Inserts an entry in the CHANGELOG for each log entry that:
+    * Is not a merge
+    * Does not match `/^:memo:/`
     * Other configurable patterns
 
 ## Configuration

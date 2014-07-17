@@ -43,7 +43,12 @@ describe 'AutoChangelog', ->
       describe 'when the CHANGELOG.md is already open', ->
         [buffer] = []
 
+        fake = (commandText, out) ->
+          out('Test log title')
+
         beforeEach ->
+          spyOn(AutoChangelog, 'run').andCallFake(fake)
+
           waitsForPromise ->
             atom.workspace.open(filePath).then (e) ->
               editor = e
@@ -52,9 +57,18 @@ describe 'AutoChangelog', ->
           waitsForPromise ->
             AutoChangelog.execute()
 
+        it 'does not open a second one', ->
+          filenames = atom.workspace.getEditors().map (e) -> path.basename(e.getPath())
+          expect(filenames.length).toBe 1
+          expect(filenames).toContain 'CHANGELOG.md'
+
         it 'adds the top-level header, if it is not there', ->
           expect(buffer.lineForRow(0)).toBe '# CHANGELOG'
+          expect(buffer.lineForRow(1)).toBe ''
 
         it 'adds the master tag header, if it is not there', ->
-          expect(buffer.lineForRow(1)).toBe ''
           expect(buffer.lineForRow(2)).toBe '## **master**'
+          expect(buffer.lineForRow(3)).toBe ''
+
+        it 'adds an item for the log entry', ->
+          expect(buffer.lineForRow(4)).toBe '* Test log title'
