@@ -31,6 +31,12 @@ module.exports =
     else
       Q()
 
+  # Internal: Executes a command.
+  #
+  # commandText - A {String} containing the command to execute.
+  # out - {Function} to call when a line (or more) of output is ready.
+  #
+  # Returns a {Promise} that is resolved when the command is complete.
   run: (commandText, out) ->
     deferred = Q.defer()
 
