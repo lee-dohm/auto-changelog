@@ -17,8 +17,8 @@ module.exports =
       editor.setText("# CHANGELOG\n\n## **master**\n\n")
       editor.moveCursorToBottom()
 
-      stdout = (line) -> editor.insertText("* #{line}")
-      @run('/usr/local/bin/git log --decorate --pretty="format:%s" --no-color --no-merges', stdout)
+      out = (line) -> editor.insertText("* #{line}")
+      @run('/usr/local/bin/git log --decorate --pretty="format:%s" --no-color --no-merges', out)
 
   # Internal: Opens the changelog file.
   #
