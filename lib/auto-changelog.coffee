@@ -5,6 +5,10 @@ Q = require 'q'
 
 # Handles the activation and deactivation of the package.
 module.exports =
+  # Public: Default configuration values.
+  configDefaults:
+    gitPath: '/usr/local/bin/git'
+
   # Public: Activates the package.
   activate: ->
     atom.workspaceView.command 'auto-changelog:execute', =>
@@ -18,7 +22,13 @@ module.exports =
       editor.moveCursorToBottom()
 
       out = (line) -> editor.insertText("* #{line}")
-      @run('/usr/local/bin/git log --decorate --pretty="format:%s" --no-color --no-merges', out)
+      @run("#{@gitPath()} --decorate --pretty=\"format:%s\" --no-color --no-merges", out)
+
+  # Internal: Gets the path to the Git executable.
+  #
+  # Returns the path {String} to the Git executable.
+  gitPath: ->
+    atom.config.get('auto-changelog.gitPath')
 
   # Internal: Opens the changelog file.
   #
@@ -31,21 +41,26 @@ module.exports =
     else
       Q()
 
-  # Internal: Executes a command.
+  # Internal: Executes a command for the output.
   #
   # commandText - A {String} containing the command to execute.
-  # out - {Function} to call when a line (or more) of output is ready.
+  # out - {Function} to call when a line of output is ready.
   #
   # Returns a {Promise} that is resolved when the command is complete.
   run: (commandText, out) ->
     deferred = Q.defer()
 
-    parts = commandText.split(' ')
-    command = parts[0]
-    args = parts.slice(1)
-    exit = -> deferred.resolve()
+    [command, args...] = commandText.split(' ')
+
+    exit = (code) ->
+      if code isnt 0
+        deferred.reject(new Error("Command '#{commandText}' exited with code #{code}"))
+      else
+        deferred.resolve()
+
     options =
       cwd: atom.project.getPath()
+
     new BufferedProcess({command, args, options, stdout: out, exit})
 
     deferred.promise
